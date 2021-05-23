@@ -5,7 +5,6 @@ let FPS = 0;
 let secondsPassed = 0;
 let oldTimeStamp = 0;
 
-
 const keyCodes = {
     'KeyW' : 'move_up',
     'KeyS' : 'move_down',
@@ -13,7 +12,6 @@ const keyCodes = {
     'KeyD' : 'move_right',
     'KeyEnter' : 'enter',
 }
-
 
 
 let PLAYER = {
@@ -24,7 +22,33 @@ let PLAYER = {
     speed: 50,
     radius: 50,
     color: '#ffb6c1',
-    stroke: 'black'
+    stroke: 'black',
+
+    isReadyToShoot: true,
+    shootDelayMs: 100,
+
+    bullets: [],
+
+    shoot(){
+
+        let bullet = new Bullet(ctx, this.position.x, this.position.y, 180, 10)
+        this.bullets.push(bullet);
+    },
+
+    processBullets(){
+        for(let bullet of this.bullets){
+            bullet.do();
+        }
+        for(let i = this.bullets.length - 1; i >= 0; i--){
+            if(this.bullets[i].isAboutToDie === true){
+                const index = this.bullets.indexOf(this.bullets[i]);
+                if(index > -1){
+                    this.bullets.splice(index, 1)
+                    console.log('bullet dead')
+                }
+            }
+        }
+    }
 }
 
 let CONTROLLER = {
@@ -34,6 +58,17 @@ let CONTROLLER = {
     down: false,
     left: false,
     right: false,
+
+    mouse: {
+        left : false,
+        right : false,
+        position: {
+            x : 0,
+            y : 0
+        }
+    },
+
+    degrees : 0,
 
     act(){
         if(this.up){
@@ -48,7 +83,13 @@ let CONTROLLER = {
         if(this.right){
             PLAYER.position.x += (PLAYER.speed * secondsPassed);
         }
+
+        PLAYER.processBullets()
     },
+    setMousePosition(x, y){
+        this.mouse.position.x = x;
+        this.mouse.position.y = y
+    }
 }
 
 let ENEMY = {
@@ -80,6 +121,16 @@ function drawPlayer(){
     ctx.lineWidth = 5;
     ctx.strokeStyle = '#000000';
     ctx.stroke();
+
+    // ctx.fillStyle = 'red'
+    // ctx.fillRect(PLAYER.position.x, PLAYER.position.y, 10, 10)
+
+
+    
+
+    //let m = (PLAYER.position.y - CONTROLLER.mouse.position.y) / (PLAYER.position.x - CONTROLLER.mouse.position.y);
+    //console.log((Math.atan2(m)) * (180 / Math.PI));
+
 }
 
 function gameLoop(timestamp){
@@ -92,6 +143,11 @@ function gameLoop(timestamp){
     drawCall();
     CONTROLLER.act();
     drawFPS();
+
+    // SPOT FOR DEBUGGING
+    // ========
+    
+    // ========
 
     window.requestAnimationFrame(gameLoop)
 }
@@ -106,6 +162,14 @@ function drawFPS(){
 function drawCall(){
     drawBackground();
     drawPlayer();
+
+    ctx.beginPath();
+    ctx.moveTo(PLAYER.position.x, PLAYER.position.y);
+    ctx.lineTo(CONTROLLER.mouse.position.x, CONTROLLER.mouse.position.y)
+    ctx.lineWidth = 10;
+    ctx.strokeStyle = 'red'
+    ctx.stroke();
+
 }
 
 function clearCanvas(){
@@ -121,7 +185,10 @@ function onMousePress(event){
     if(event.target.id === 'main'){
         switch(event.button){
         
-        case 0: console.log(`Left: X: ${event.clientX}| Y: ${event.clientY}`)
+        //LEFT MOUSE CLICK
+        case 0: {
+            PLAYER.shoot();
+        }
             break;
         case 1: console.log(`Right: X: ${event.clientX}| Y: ${event.clientY}`)
             break;
@@ -159,8 +226,15 @@ function HandleKey(event){
     }
 }
 
+function HandleMouseMove(event){
+    if(event.target.id === 'main'){
+        CONTROLLER.setMousePosition(event.pageX, event.pageY)
+    }
+}
+
 document.addEventListener('keyup', HandleKey)
 document.addEventListener('keydown', HandleKey)
 document.addEventListener('mousedown', (event) => onMousePress(event))
+document.addEventListener('mousemove', HandleMouseMove);
 
 window.requestAnimationFrame(gameLoop)
