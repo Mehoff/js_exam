@@ -1,20 +1,23 @@
 class Bullet{
 
-    constructor(context, x, y, angle, speed){
+    constructor(context, x, y, width, height, angle, speed){
         
         this.moveAngle = angle;
         this.ctx = context;
         this.speed = speed;
         this.x = x;
         this.y = y;
+        this.width = width,
+        this.height = height,
         this.isAboutToDie = false;
     }
 
 
     do(){
-         this.x += 5;
-         this.y += 5;
+        this.x += this.speed * Math.cos(this.moveAngle);
+        this.y += this.speed * (-Math.sin(this.moveAngle));
         
+
         this.draw();
         this.isAboutToDie = this.isOutOfCanvas();
         //also add collision later
@@ -31,7 +34,12 @@ class Bullet{
     }
 
     draw(){
-        ctx.fillStyle = 'blue'
-        ctx.fillRect(this.x, this.y, 10, 10);
+
+        ctx.beginPath()
+        ctx.arc(this.x + (this.width / 2), this.y + (this.width / 2), this.width, 2 * Math.PI, false);
+        ctx.fillStyle = 'yellow'
+        ctx.fill()
+
+        //ctx.fillRect(this.x, this.y, this.width, this.height);
     }
 }

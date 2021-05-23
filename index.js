@@ -11,6 +11,7 @@ const keyCodes = {
     'KeyA' : 'move_left',
     'KeyD' : 'move_right',
     'KeyEnter' : 'enter',
+    'ShiftLeft': 'run'
 }
 
 
@@ -20,18 +21,33 @@ let PLAYER = {
         y : 100
     },
     speed: 50,
-    radius: 50,
+    runSpeed: 100,
+    radius: 30,
+    strokeWidth: 3,
     color: '#ffb6c1',
     stroke: 'black',
 
+
+    // Use Later
     isReadyToShoot: true,
     shootDelayMs: 100,
+    bulletWidth: 5,
+    bulletHeight: 10,
+    bulletSpeed: 10,
 
     bullets: [],
 
     shoot(){
 
-        let bullet = new Bullet(ctx, this.position.x, this.position.y, 180, 10)
+        // SetTimeOut on shootDelay
+
+        let deltaX = PLAYER.position.x - CONTROLLER.mouse.position.x
+        let deltaY = PLAYER.position.y - CONTROLLER.mouse.position.y
+        
+        let rotation = (Math.atan2(deltaY, deltaX)) * 180 / Math.PI
+        let radians = (2 * Math.PI / 360) * (rotation - 180) * -1;
+        
+        let bullet = new Bullet(ctx, this.position.x - (this.bulletWidth / 2), this.position.y - (this.bulletHeight / 2), this.bulletWidth, this.bulletheight, radians, this.bulletSpeed)
         this.bullets.push(bullet);
     },
 
@@ -54,6 +70,7 @@ let PLAYER = {
 let CONTROLLER = {
 
     isMoving: false,
+    isRunning: false,
     up: false,
     down: false,
     left: false,
@@ -72,16 +89,16 @@ let CONTROLLER = {
 
     act(){
         if(this.up){
-            PLAYER.position.y -= (PLAYER.speed * secondsPassed);
+            PLAYER.position.y -= this.isRunning === true ? (PLAYER.runSpeed * secondsPassed) : (PLAYER.speed * secondsPassed) 
         }
         if(this.down){
-            PLAYER.position.y += (PLAYER.speed * secondsPassed)
+            PLAYER.position.y += this.isRunning === true ? (PLAYER.runSpeed * secondsPassed) : (PLAYER.speed * secondsPassed) 
         }
         if(this.left){
-            PLAYER.position.x -= (PLAYER.speed * secondsPassed);
+            PLAYER.position.x -= this.isRunning === true ? (PLAYER.runSpeed * secondsPassed) : (PLAYER.speed * secondsPassed);
         }
         if(this.right){
-            PLAYER.position.x += (PLAYER.speed * secondsPassed);
+            PLAYER.position.x += this.isRunning === true ? (PLAYER.runSpeed * secondsPassed) : (PLAYER.speed * secondsPassed);
         }
 
         PLAYER.processBullets()
@@ -118,19 +135,9 @@ function drawPlayer(){
     ctx.fillStyle = PLAYER.color;
     ctx.fill();
     
-    ctx.lineWidth = 5;
+    ctx.lineWidth = PLAYER.strokeWidth;
     ctx.strokeStyle = '#000000';
     ctx.stroke();
-
-    // ctx.fillStyle = 'red'
-    // ctx.fillRect(PLAYER.position.x, PLAYER.position.y, 10, 10)
-
-
-    
-
-    //let m = (PLAYER.position.y - CONTROLLER.mouse.position.y) / (PLAYER.position.x - CONTROLLER.mouse.position.y);
-    //console.log((Math.atan2(m)) * (180 / Math.PI));
-
 }
 
 function gameLoop(timestamp){
@@ -165,11 +172,10 @@ function drawCall(){
 
     ctx.beginPath();
     ctx.moveTo(PLAYER.position.x, PLAYER.position.y);
-    ctx.lineTo(CONTROLLER.mouse.position.x, CONTROLLER.mouse.position.y)
+
     ctx.lineWidth = 10;
     ctx.strokeStyle = 'red'
     ctx.stroke();
-
 }
 
 function clearCanvas(){
@@ -177,26 +183,17 @@ function clearCanvas(){
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
-
 function onMousePress(event){
     
     event.preventDefault();
     
     if(event.target.id === 'main'){
         switch(event.button){
-        
-        //LEFT MOUSE CLICK
-        case 0: {
-            PLAYER.shoot();
+        case 0: PLAYER.shoot();
+            break;
         }
-            break;
-        case 1: console.log(`Right: X: ${event.clientX}| Y: ${event.clientY}`)
-            break;
-    }
-
     }
 }
-
 
 function HandleKey(event){
 
@@ -205,6 +202,11 @@ function HandleKey(event){
     const action = keyCodes[key];
 
     if(action){
+
+//        CONTROLLER.isRunning = (action === 'ShiftLeft');
+
+        console.log(CONTROLLER.isRunning)
+
         if(action.startsWith('move')){
             CONTROLLER.isMoving = (type === 'keydown');
             switch(action){
@@ -221,7 +223,7 @@ function HandleKey(event){
                             CONTROLLER.down = CONTROLLER.isMoving
                         } break;
                         default: console.log(`action ${action} is not specified`)
-                    }
+                }
         }
     }
 }
