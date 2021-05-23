@@ -7,12 +7,14 @@ let oldTimeStamp = 0;
 
 
 const keyCodes = {
-    '119' : 'move_up',
-    '115' : 'move_down',
-    '97' : 'move_left',
-    '100' : 'move_right',
-    '13' : 'enter',
+    'KeyW' : 'move_up',
+    'KeyS' : 'move_down',
+    'KeyA' : 'move_left',
+    'KeyD' : 'move_right',
+    'KeyEnter' : 'enter',
 }
+
+
 
 let PLAYER = {
     position: {
@@ -23,6 +25,30 @@ let PLAYER = {
     radius: 50,
     color: '#ffb6c1',
     stroke: 'black'
+}
+
+let CONTROLLER = {
+
+    isMoving: false,
+    up: false,
+    down: false,
+    left: false,
+    right: false,
+
+    act(){
+        if(this.up){
+            PLAYER.position.y -= (PLAYER.speed * secondsPassed);
+        }
+        if(this.down){
+            PLAYER.position.y += (PLAYER.speed * secondsPassed)
+        }
+        if(this.left){
+            PLAYER.position.x -= (PLAYER.speed * secondsPassed);
+        }
+        if(this.right){
+            PLAYER.position.x += (PLAYER.speed * secondsPassed);
+        }
+    },
 }
 
 let ENEMY = {
@@ -64,6 +90,7 @@ function gameLoop(timestamp){
 
     clearCanvas();
     drawCall();
+    CONTROLLER.act();
     drawFPS();
 
     window.requestAnimationFrame(gameLoop)
@@ -86,10 +113,6 @@ function clearCanvas(){
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
-function onKeyPress(event){
-    event.preventDefault();
-    handleAction(keyCodes[event.keyCode])
-}
 
 function onMousePress(event){
     
@@ -107,27 +130,37 @@ function onMousePress(event){
     }
 }
 
-function handleAction(action){
-    switch(action){
-        case 'move_left': {
-            PLAYER.position.x -= (PLAYER.speed * secondsPassed);
-        } break;
-        case 'move_right': {
-            PLAYER.position.x += (PLAYER.speed * secondsPassed);
-        } break;
-        case 'move_up': {
-            PLAYER.position.y -= (PLAYER.speed * secondsPassed);
-        } break;
-        case 'move_down': {
-            PLAYER.position.y += (PLAYER.speed * secondsPassed)
-        } break;
-        default: console.log(`action ${action} is not specified`)
-    }
 
-    console.log(PLAYER.position)
+function HandleKey(event){
+
+    const type = event.type;
+    const key = event.code;
+    const action = keyCodes[key];
+
+    if(action){
+        if(action.startsWith('move')){
+            CONTROLLER.isMoving = (type === 'keydown');
+            switch(action){
+                        case 'move_left': {
+                            CONTROLLER.left = CONTROLLER.isMoving
+                        } break;
+                        case 'move_right': {
+                            CONTROLLER.right = CONTROLLER.isMoving
+                        } break;
+                        case 'move_up': {
+                            CONTROLLER.up = CONTROLLER.isMoving
+                        } break;
+                        case 'move_down': {
+                            CONTROLLER.down = CONTROLLER.isMoving
+                        } break;
+                        default: console.log(`action ${action} is not specified`)
+                    }
+        }
+    }
 }
 
-document.addEventListener('keypress', (event) => onKeyPress(event))
+document.addEventListener('keyup', HandleKey)
+document.addEventListener('keydown', HandleKey)
 document.addEventListener('mousedown', (event) => onMousePress(event))
 
 window.requestAnimationFrame(gameLoop)
