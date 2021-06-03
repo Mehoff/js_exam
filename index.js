@@ -37,13 +37,12 @@ let PLAYER = {
 
     bullets: [],
 
-    shoot(){
-
+    shoot(canvasX, canvasY){
         // SetTimeOut on shootDelay
-
-        let deltaX = PLAYER.position.x - CONTROLLER.mouse.position.x
-        let deltaY = PLAYER.position.y - CONTROLLER.mouse.position.y
         
+        let deltaX = PLAYER.position.x - canvasX;
+        let deltaY = PLAYER.position.y - canvasY;
+
         let rotation = (Math.atan2(deltaY, deltaX)) * 180 / Math.PI
         let radians = (2 * Math.PI / 360) * (rotation - 180) * -1;
         
@@ -189,7 +188,13 @@ function onMousePress(event){
     
     if(event.target.id === 'main'){
         switch(event.button){
-        case 0: PLAYER.shoot();
+        case 0:
+
+            let rect = canvas.getBoundingClientRect();
+            let x = event.clientX - rect.left;
+            let y = event.clientY - rect.top;
+            
+            PLAYER.shoot(x, y);
             break;
         }
     }
