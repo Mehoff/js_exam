@@ -14,6 +14,7 @@ const keyCodes = {
     'ShiftLeft': 'run'
 }
 
+const mainPlayer = new Player(100,100,30, typeof(PlayerBullet))
 
 let PLAYER = {
     position: {
