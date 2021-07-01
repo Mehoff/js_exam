@@ -1,26 +1,32 @@
 class Bullet{
+    ctx;
+    x;
+    y;
+    angle;
 
-    constructor(context, x, y, width, height, angle, speed){
-        
-        this.moveAngle = angle;
+    width;
+    height;
+    speed;
+    color;
+    isAboutToDieFlag;
+
+    constructor(context, x, y, angle){
         this.ctx = context;
-        this.speed = speed;
         this.x = x;
         this.y = y;
-        this.width = width,
-        this.height = height,
-        this.isAboutToDie = false;
+        this.angle = angle;
+        this.isAboutToDieFlag = false;
     }
 
-
     do(){
-        this.x += this.speed * Math.cos(this.moveAngle);
-        this.y += this.speed * (-Math.sin(this.moveAngle));
+
+
+        this.x += this.speed * Math.cos(this.angle);
+        this.y += this.speed * (-Math.sin(this.angle));
         
 
         this.draw();
         this.isAboutToDie = this.isOutOfCanvas();
-        //also add collision later
     }
 
     isOutOfCanvas(){
@@ -34,12 +40,31 @@ class Bullet{
     }
 
     draw(){
-
         ctx.beginPath()
         ctx.arc(this.x + (this.width / 2), this.y + (this.width / 2), this.width, 2 * Math.PI, false);
         ctx.fillStyle = 'yellow'
         ctx.fill()
+    }
+}
 
-        //ctx.fillRect(this.x, this.y, this.width, this.height);
+class PlayerBullet extends Bullet{
+    constructor(context, x, y, angle){
+        super(context, x, y, angle);
+
+        this.speed = 10;
+        this.height = 10;
+        this.width = 10;
+        this.color = 'yellow'
+    }
+}
+
+class EnemyBullet extends Bullet{
+    constructor(context, x, y, angle){
+        super(context, x, y, angle);
+        
+        this.speed = 4;
+        this.width = 10;
+        this.height = 10;
+        this.color = "orange"
     }
 }
