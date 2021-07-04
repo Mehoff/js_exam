@@ -33,18 +33,36 @@ class Entity {
 
     processBullets(){
         {
+
+            
             for(let bullet of this.bullets){
                 bullet.do();
             }
-            for(let i = this.bullets.length - 1; i >= 0; i--){
-                if(this.bullets[i].isAboutToDie === true){
-                    const index = this.bullets.indexOf(this.bullets[i]);
-                    if(index > -1){
-                        this.bullets.splice(index, 1)
-                    }
-                }
-            }
+            // for(let i = this.bullets.length - 1; i >= 0; i--){
+            //     this.bullets[i].do();
+            //     if(this.bullets[i].dying === true){
+            //         const index = this.bullets.indexOf(this.bullets[i]);
+            //         if(index > -1){
+            //             this.bullets.splice(index, 1)
+            //             console.log(this.bullets.length);
+            //         }
+            //     }
+            // }
         }
     }
 
+    checkCollision(bullet){
+        if((this.position.x / 10).toFixed(0) === (bullet.position.x / 10).toFixed(0) && (this.position.y / 10).toFixed(0) === (bullet.position.y / 10).toFixed(0))
+        {
+            //console.log(bullet)
+            // console.log('collision')
+            // bullet.dying = true;
+
+
+            const index = bullet.author.bullets.indexOf(bullet)
+            if(index > -1){
+                bullet.author.bullets.splice(index, 1);
+            }
+        }
+    }
 }

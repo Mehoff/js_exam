@@ -1,4 +1,4 @@
-class Enemy{
+class Enemy extends Entity{
     constructor
     (
         ctx,
@@ -9,6 +9,7 @@ class Enemy{
         target
     )
     {
+        super(undefined)
         this.ctx = ctx;
         this.position = position;
         this.speed = speed;
@@ -67,9 +68,8 @@ class Enemy{
         let radians = (2 * Math.PI / 360) * (rotation - 180) * -1;
 
         let bullet = new EnemyBullet(this.ctx,
-            this.position.x - (10 / 2),
-            this.position.y - (10 / 2),
-            radians
+            {x: this.position.x - (10/ 2), y: this.position.y - (10 / 2)},
+            radians, this
         );
         
         this.bullets.push(bullet);
@@ -79,14 +79,16 @@ class Enemy{
         for(let bullet of this.bullets){
             bullet.do();
         }
-        for(let i = this.bullets.length - 1; i >= 0; i--){
-            if(this.bullets[i].isAboutToDie === true){
-                const index = this.bullets.indexOf(this.bullets[i]);
-                if(index > -1){
-                    this.bullets.splice(index, 1)
-                }
-            }
-        }
+        // for(let i = this.bullets.length - 1; i >= 0; i--){
+        //     this.bullets[i].do();
+        //     if(this.bullets[i].dying === true){
+        //         const index = this.bullets.indexOf(this.bullets[i]);
+        //         if(index > -1){
+        //             this.bullets.splice(index, 1);
+        //             console.log(this.bullets.length)
+        //         }
+        //     }
+        // }
     }
 
     act(){

@@ -16,7 +16,11 @@ const keyCodes = {
 
 const controller = new MovementController(ctx);
 const mainPlayer = new Player({x: 100, y: 100}, 100, 30, 'yellow', controller);
-const enemy = new Enemy(ctx, {x: 500, y: 500}, 1, 20, 'red', mainPlayer)
+//const enemy = new Enemy()
+
+let enemies = [
+    new Enemy(ctx, {x: 500, y: 500}, 1, 20, 'red', mainPlayer)
+]
 
 function drawBackground(){
     ctx.fillStyle = 'green'
@@ -28,9 +32,12 @@ function drawPlayer(){
     mainPlayer.draw(); 
 }
 
-function drawEnemy(){
-    enemy.act();
-    enemy.draw();
+function drawEnemies(){
+
+    for(const enemy of enemies){
+        enemy.act();
+        enemy.draw();
+    }
 }
 
 function gameLoop(timestamp){
@@ -55,7 +62,23 @@ function drawFPS(){
 function drawCall(){
     drawBackground();
     drawPlayer();
-    drawEnemy();
+    drawEnemies();
+    checkBulletCollisions()
+}
+
+function checkBulletCollisions(){
+    
+    for(const enemy of enemies){
+        for(const bullet of enemy.bullets){
+            mainPlayer.checkCollision(bullet)
+        }
+    }
+
+    for(const bullet of mainPlayer.bullets){
+        for(const enemy of enemies){
+            enemy.checkCollision(bullet)
+        }
+    }
 }
 
 function clearCanvas(){

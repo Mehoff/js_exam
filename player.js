@@ -26,9 +26,8 @@ class Player extends Entity{
         let radians = (2 * Math.PI / 360) * (rotation - 180) * -1;
 
         let bullet = new PlayerBullet(this.controller.ctx,
-            this.position.x - (10 / 2),
-            this.position.y - (10 / 2),
-            radians
+            {x: this.position.x - (10/ 2), y: this.position.y - (10 / 2)},
+            radians, this
         );
         
         this.bullets.push(bullet);
