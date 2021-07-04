@@ -16,7 +16,7 @@ const keyCodes = {
 
 const controller = new MovementController(ctx);
 const mainPlayer = new Player({x: 100, y: 100}, 100, 30, 'yellow', controller);
-
+const enemy = new Enemy(ctx, {x: 500, y: 500}, 1, 20, 'red', mainPlayer)
 
 function drawBackground(){
     ctx.fillStyle = 'green'
@@ -26,6 +26,11 @@ function drawBackground(){
 function drawPlayer(){
     mainPlayer.act();
     mainPlayer.draw(); 
+}
+
+function drawEnemy(){
+    enemy.act();
+    enemy.draw();
 }
 
 function gameLoop(timestamp){
@@ -50,6 +55,7 @@ function drawFPS(){
 function drawCall(){
     drawBackground();
     drawPlayer();
+    drawEnemy();
 }
 
 function clearCanvas(){

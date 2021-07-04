@@ -58,9 +58,6 @@ class MovementController{
             //Зачем я это написал, дичь какая-то...
             //this.isMoving = (type === 'keydown');
 
-            console.log(action)
-
-
             // Возможно переделать все экшены связанные с движенем под этот шаблон:
 
             if(action === 'run'){
@@ -94,9 +91,6 @@ class MovementController{
                     default: console.log(`action ${action} is not specified`)
                 }
             }
-
-            //console.log(this.isRunning)
-
             
         }
     }

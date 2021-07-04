@@ -42,7 +42,7 @@ class Bullet{
     draw(){
         ctx.beginPath()
         ctx.arc(this.x + (this.width / 2), this.y + (this.width / 2), this.width, 2 * Math.PI, false);
-        ctx.fillStyle = 'yellow'
+        ctx.fillStyle = this.color
         ctx.fill()
     }
 }
