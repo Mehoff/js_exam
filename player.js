@@ -4,7 +4,8 @@ class Player extends Entity{
         speed,
         radius,
         fillColor,
-        movementController
+        movementController,
+        maxhp
     ){
         super(movementController);
         this.position = position;
@@ -14,7 +15,9 @@ class Player extends Entity{
 
         this.bullets = [];
         this.isReadyToShoot = true;
-        this.shootDelayMs = 100; 
+        this.shootDelayMs = 100;
+        this.maxhp = maxhp;
+        this.hp = this.maxhp;
     }
 
     shoot(){
@@ -35,5 +38,10 @@ class Player extends Entity{
 
     act(){
         this.controller.act(this);
+    }
+
+    die(){
+        alert('You lost!');
+        startGame()
     }
 }

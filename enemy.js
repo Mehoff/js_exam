@@ -6,7 +6,8 @@ class Enemy extends Entity{
         speed,
         radius,
         fillColor,
-        target
+        target,
+        hp
     )
     {
         super(undefined)
@@ -16,6 +17,7 @@ class Enemy extends Entity{
         this.radius = radius;
         this.fillColor = fillColor;
         this.target = target;
+        this.hp = hp;
 
         this.bullets = [];
         this.isReadyToShoot = true;

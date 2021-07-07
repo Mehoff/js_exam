@@ -14,22 +14,68 @@ const keyCodes = {
     'ShiftLeft': 'run'
 }
 
-const controller = new MovementController(ctx);
-const mainPlayer = new Player({x: 100, y: 100}, 100, 30, 'yellow', controller);
-//const enemy = new Enemy()
+let controller = new MovementController(ctx);
+let mainPlayer = new Player({x: 100, y: 100}, 100, 30, 'yellow', controller, 100);
 
 let enemies = [
-    new Enemy(ctx, {x: 500, y: 500}, 1, 20, 'red', mainPlayer)
+    new Enemy(ctx, getRandomCanvasPosition(), 1, 20, 'red', mainPlayer, 30),
+    new Enemy(ctx, getRandomCanvasPosition(), 1, 20, 'red', mainPlayer, 30),
+    new Enemy(ctx, getRandomCanvasPosition(), 1, 20, 'red', mainPlayer, 30),
+    new Enemy(ctx, getRandomCanvasPosition(), 1, 20, 'red', mainPlayer, 30),
 ]
+
+
+function startGame(){
+
+    controller = new MovementController(ctx);
+    mainPlayer = new Player({x: 100, y: 100}, 100, 30, 'yellow', controller, 100);
+
+    enemies = [];
+    enemies = [
+        new Enemy(ctx, getRandomCanvasPosition(), 1, 20, 'red', mainPlayer, 30),
+        new Enemy(ctx, getRandomCanvasPosition(), 1, 20, 'red', mainPlayer, 30),
+        new Enemy(ctx, getRandomCanvasPosition(), 1, 20, 'red', mainPlayer, 30),
+        new Enemy(ctx, getRandomCanvasPosition(), 1, 20, 'red', mainPlayer, 30),
+    ];
+
+}
+
+function getRandomCanvasPosition(){
+    
+    let x = 0 + Math.random() * (canvas.clientWidth + 1 - 0);
+    let y = 0 + Math.random() * (canvas.clientHeight + 1 - 0);
+
+    return {x , y};
+}
 
 function drawBackground(){
     ctx.fillStyle = 'green'
     ctx.fillRect(0,0, canvas.width, canvas.height);
 }
 
+function drawHP(hp){
+    const MAX_HP = mainPlayer.maxhp;
+
+    const X = canvas.clientWidth / 2;
+    const Y = canvas.clientHeight / 2;
+
+    const CURRENT_HP_PERCENT = mainPlayer.hp * 100 / MAX_HP;
+
+    if(CURRENT_HP_PERCENT > 50){
+        ctx.fillStyle = 'blue'
+    }
+    else{
+        ctx.fillStyle = 'blue'
+    }
+
+    ctx.beginPath();
+    ctx.rect(X, Y, CURRENT_HP_PERCENT, 10);
+}
+
 function drawPlayer(){
     mainPlayer.act();
-    mainPlayer.draw(); 
+    mainPlayer.draw();
+    drawHP(mainPlayer.hp);
 }
 
 function drawEnemies(){
@@ -37,6 +83,11 @@ function drawEnemies(){
     for(const enemy of enemies){
         enemy.act();
         enemy.draw();
+
+        if(enemy.dieFlag){
+            const index = enemies.indexOf(enemy);
+            enemies.splice(index, 1);
+        }
     }
 }
 

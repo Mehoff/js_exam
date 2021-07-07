@@ -7,6 +7,7 @@ class Bullet{
     height;
     speed;
     color;
+    damage;
     dying;
 
     author;
@@ -58,6 +59,7 @@ class PlayerBullet extends Bullet{
         this.speed = 10;
         this.height = 10;
         this.width = 10;
+        this.damage = 10;
         this.color = 'yellow'
     }
 }
@@ -66,6 +68,7 @@ class EnemyBullet extends Bullet{
     constructor(context, position, angle, author){
         super(context, position, angle, author);
         
+        this.damage = 5;
         this.speed = 4;
         this.width = 10;
         this.height = 10;

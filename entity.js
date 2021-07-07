@@ -8,9 +8,13 @@ class Entity {
     shootDelayMs
     controller
     bullets
+    maxhp
+    hp
+    dieFlag
 
     constructor(controller){
         this.controller = controller;
+        this.dieFlag = false;
     }
 
     draw(){    
@@ -51,18 +55,54 @@ class Entity {
         }
     }
 
-    checkCollision(bullet){
-        if((this.position.x / 10).toFixed(0) === (bullet.position.x / 10).toFixed(0) && (this.position.y / 10).toFixed(0) === (bullet.position.y / 10).toFixed(0))
-        {
-            //console.log(bullet)
-            // console.log('collision')
-            // bullet.dying = true;
+    takeDamage(bullet){
+        this.hp -= bullet.damage
+        this.checkDeath();
+    }
 
-
-            const index = bullet.author.bullets.indexOf(bullet)
-            if(index > -1){
-                bullet.author.bullets.splice(index, 1);
-            }
+    checkDeath(){
+        if(this.hp <= 0){
+            this.die();
         }
+    }
+
+    die(){
+        this.dieFlag = true;
+    }
+
+    checkCollision(bullet){
+        // if((this.position.x / 10).toFixed(0) === (bullet.position.x / 10).toFixed(0) && (this.position.y / 10).toFixed(0) === (bullet.position.y / 10).toFixed(0))
+        // {
+        //     //console.log(bullet)
+        //     // console.log('collision')
+        //     // bullet.dying = true;
+
+
+        //     const index = bullet.author.bullets.indexOf(bullet)
+        //     if(index > -1){
+        //         bullet.author.bullets.splice(index, 1);
+        //     }
+        // }
+
+        // if
+        // (
+        //     Math.abs(bullet.position.x - this.position.x) > (bullet.width + this.radius) &&
+        //     Math.abs(bullet.position.y - this.position.y) > (bullet.width + this.radius)
+        // )
+        // {
+        //     console.log("COLLISION")
+        // }
+
+
+        const dx = bullet.position.x - this.position.x;
+        const dy = bullet.position.y - this.position.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if(dist < (bullet.width / 2) + this.radius){
+            this.takeDamage(bullet);
+            const index = bullet.author.bullets.indexOf(bullet);
+            bullet.author.bullets.splice(index, 1);
+        }
+
     }
 }
