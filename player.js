@@ -41,7 +41,6 @@ class Player extends Entity{
     }
 
     die(){
-        alert('You lost!');
-        startGame()
+        WAVE_CONTROLLER.tryStartGame();
     }
 }

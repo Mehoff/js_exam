@@ -34,16 +34,20 @@ class MovementController{
 
 
         if(this.up){
-            entity.position.y -= this.isRunning === true ? ((entity.speed * 2) * secondsPassed) : (entity.speed * secondsPassed)
+            if(entity.position.y > 0 + entity.radius)
+                entity.position.y -= this.isRunning === true ? ((entity.speed * 2) * secondsPassed) : (entity.speed * secondsPassed)
         }
         if(this.down){
-            entity.position.y += this.isRunning === true ? ((entity.speed * 2) * secondsPassed) : (entity.speed * secondsPassed)
+            if(entity.position.y < this.ctx.canvas.clientHeight - entity.radius)
+                entity.position.y += this.isRunning === true ? ((entity.speed * 2) * secondsPassed) : (entity.speed * secondsPassed)
         }
         if(this.left){
-            entity.position.x -= this.isRunning === true ? ((entity.speed * 2) * secondsPassed) : (entity.speed * secondsPassed);
+            if(entity.position.x > 0 + entity.radius)
+                entity.position.x -= this.isRunning === true ? ((entity.speed * 2) * secondsPassed) : (entity.speed * secondsPassed);
         }
         if(this.right){
-            entity.position.x += this.isRunning === true ? ((entity.speed * 2) * secondsPassed) : (entity.speed * secondsPassed);
+            if(entity.position.x < this.ctx.canvas.clientWidth - entity.radius)
+                entity.position.x += this.isRunning === true ? ((entity.speed * 2) * secondsPassed) : (entity.speed * secondsPassed);
         }
 
     }

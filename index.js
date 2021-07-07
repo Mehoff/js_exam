@@ -1,6 +1,9 @@
 let canvas = document.getElementById('main')
 let ctx = canvas.getContext('2d')
 
+let WAVE_CONTROLLER = new WaveController();
+let ENEMIES_WAVE_COUNT = 2;
+
 let FPS = 0;
 let secondsPassed = 0;
 let oldTimeStamp = 0;
@@ -14,79 +17,86 @@ const keyCodes = {
     'ShiftLeft': 'run'
 }
 
-let controller = new MovementController(ctx);
-let mainPlayer = new Player({x: 100, y: 100}, 100, 30, 'yellow', controller, 100);
-
-let enemies = [
-    new Enemy(ctx, getRandomCanvasPosition(), 1, 20, 'red', mainPlayer, 30),
-    new Enemy(ctx, getRandomCanvasPosition(), 1, 20, 'red', mainPlayer, 30),
-    new Enemy(ctx, getRandomCanvasPosition(), 1, 20, 'red', mainPlayer, 30),
-    new Enemy(ctx, getRandomCanvasPosition(), 1, 20, 'red', mainPlayer, 30),
-]
-
+let controller
+let mainPlayer 
+let enemyGenerator
+let enemies = []
 
 function startGame(){
-
     controller = new MovementController(ctx);
     mainPlayer = new Player({x: 100, y: 100}, 100, 30, 'yellow', controller, 100);
-
-    enemies = [];
-    enemies = [
-        new Enemy(ctx, getRandomCanvasPosition(), 1, 20, 'red', mainPlayer, 30),
-        new Enemy(ctx, getRandomCanvasPosition(), 1, 20, 'red', mainPlayer, 30),
-        new Enemy(ctx, getRandomCanvasPosition(), 1, 20, 'red', mainPlayer, 30),
-        new Enemy(ctx, getRandomCanvasPosition(), 1, 20, 'red', mainPlayer, 30),
-    ];
-
+    enemyGenerator = new EnemyGenerator(ctx, mainPlayer);
+    enemies = enemyGenerator.getEnemiesArray(ENEMIES_WAVE_COUNT);
 }
 
-function getRandomCanvasPosition(){
-    
-    let x = 0 + Math.random() * (canvas.clientWidth + 1 - 0);
-    let y = 0 + Math.random() * (canvas.clientHeight + 1 - 0);
-
-    return {x , y};
-}
+startGame();
 
 function drawBackground(){
     ctx.fillStyle = 'green'
     ctx.fillRect(0,0, canvas.width, canvas.height);
 }
 
-function drawHP(hp){
+function drawPlayerHP(){
     const MAX_HP = mainPlayer.maxhp;
-
-    const X = canvas.clientWidth / 2;
-    const Y = canvas.clientHeight / 2;
 
     const CURRENT_HP_PERCENT = mainPlayer.hp * 100 / MAX_HP;
 
-    if(CURRENT_HP_PERCENT > 50){
-        ctx.fillStyle = 'blue'
+    if(CURRENT_HP_PERCENT >= 60){
+        ctx.fillStyle = 'lightgreen'
     }
-    else{
-        ctx.fillStyle = 'blue'
+    else if(CURRENT_HP_PERCENT < 60 && CURRENT_HP_PERCENT >= 20) {
+        ctx.fillStyle = 'orange';
+    }
+    else {
+        ctx.fillStyle = 'red';
     }
 
     ctx.beginPath();
-    ctx.rect(X, Y, CURRENT_HP_PERCENT, 10);
+    ctx.rect(mainPlayer.position.x - mainPlayer.radius * 1.6, mainPlayer.position.y - 50, CURRENT_HP_PERCENT, 10);
+    ctx.fill()
+}
+
+function drawEnemyHP(enemy){
+    const MAX_HP = enemy.maxhp;
+
+    const X = 1050;
+    const Y = 20;
+
+    const CURRENT_HP_PERCENT = enemy.hp * 100 / MAX_HP;
+
+
+    if(CURRENT_HP_PERCENT >= 60){
+        ctx.fillStyle = 'lightgreen'
+    }
+    else if(CURRENT_HP_PERCENT < 60 && CURRENT_HP_PERCENT >= 20) {
+        ctx.fillStyle = 'orange';
+    }
+    else {
+        ctx.fillStyle = 'red';
+    }
+
+    ctx.beginPath();
+    ctx.rect(enemy.position.x - enemy.radius * 2.5, enemy.position.y - 40, CURRENT_HP_PERCENT, 10);
+    ctx.fill()
 }
 
 function drawPlayer(){
     mainPlayer.act();
     mainPlayer.draw();
-    drawHP(mainPlayer.hp);
+    drawPlayerHP(mainPlayer.hp);
 }
 
 function drawEnemies(){
 
     for(const enemy of enemies){
         enemy.act();
+        drawEnemyHP(enemy);
         enemy.draw();
 
         if(enemy.dieFlag){
             const index = enemies.indexOf(enemy);
             enemies.splice(index, 1);
+            WAVE_CONTROLLER.tryStartGame();
         }
     }
 }
@@ -144,7 +154,6 @@ function onMousePress(event){
         mainPlayer.shoot();
     
 }
-
 
 function HandleMouseMove(event){
     if(event.target.id === 'main'){

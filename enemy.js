@@ -7,7 +7,8 @@ class Enemy extends Entity{
         radius,
         fillColor,
         target,
-        hp
+        hp,
+        shootDelayMs
     )
     {
         super(undefined)
@@ -18,10 +19,13 @@ class Enemy extends Entity{
         this.fillColor = fillColor;
         this.target = target;
         this.hp = hp;
+        this.maxhp = hp;
 
         this.bullets = [];
         this.isReadyToShoot = true;
-        this.shootDelayMs = 1000;
+        this.shootDelayMs = shootDelayMs;
+
+        console.log(this)
 
         this.shoot();
     }
